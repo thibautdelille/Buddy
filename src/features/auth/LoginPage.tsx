@@ -13,11 +13,43 @@ export interface LoginFormData {
   email: string;
 }
 
+interface FormErrors {
+  name?: string;
+  email?: string;
+}
+
 export function LoginPage() {
   const [formData, setFormData] = useState<LoginFormData>({
     name: '',
     email: '',
   });
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const validateField = (name: string, value: string): string => {
+    switch (name) {
+      case 'name':
+        if (!value.trim()) {
+          return 'Name is required';
+        }
+        if (value.trim().length < 2) {
+          return 'Name must be at least 2 characters';
+        }
+        return '';
+      case 'email': {
+        if (!value.trim()) {
+          return 'Email is required';
+        }
+        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+        if (!emailRegex.test(value)) {
+          return 'Invalid email address';
+        }
+        return '';
+      }
+      default:
+        return '';
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -25,12 +57,43 @@ export function LoginPage() {
       ...prev,
       [name]: value,
     }));
+    
+    // Validate on change if field has been touched
+    if (touched[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: validateField(name, value),
+      }));
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setTouched((prev) => ({
+      ...prev,
+      [name]: true,
+    }));
+    setErrors((prev) => ({
+      ...prev,
+      [name]: validateField(name, value),
+    }));
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: FormErrors = {
+      name: validateField('name', formData.name),
+      email: validateField('email', formData.email),
+    };
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(Boolean);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement login logic
-    console.log('Form submitted:', formData);
+    if (validateForm()) {
+      // TODO: Implement login logic
+      console.log('Form submitted:', formData);
+    }
   };
 
   return (
@@ -76,6 +139,9 @@ export function LoginPage() {
               autoFocus
               value={formData.name}
               onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.name && Boolean(errors.name)}
+              helperText={touched.name && errors.name}
             />
             <TextField
               margin="normal"
@@ -87,6 +153,9 @@ export function LoginPage() {
               autoComplete="email"
               value={formData.email}
               onChange={handleChange}
+              onBlur={handleBlur}
+              error={touched.email && Boolean(errors.email)}
+              helperText={touched.email && errors.email}
             />
             <Button
               type="submit"
