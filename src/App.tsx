@@ -1,4 +1,4 @@
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { CssBaseline, ThemeProvider, createTheme, useMediaQuery } from '@mui/material';
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,19 +10,29 @@ import { LoginPage } from './features/auth/LoginPage';
 import { SearchPage } from './features/search/SearchPage';
 import { ProtectedRoute } from './features/auth/ProtectedRoute';
 import { AuthProvider } from './features/auth/AuthProvider';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#2196f3', // A nice blue color
-    },
-    background: {
-      default: '#f5f5f5',
-    },
-  },
-});
+import { useMemo, useState } from 'react';
 
 function App() {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const [mode, setMode] = useState<'light' | 'dark'>(prefersDarkMode ? 'dark' : 'light');
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+          primary: {
+            main: '#2196f3',
+          },
+          background: {
+            default: mode === 'light' ? '#f5f5f5' : '#121212',
+            paper: mode === 'light' ? '#fff' : '#1e1e1e',
+          },
+        },
+      }),
+    [mode]
+  );
+
   return (
     <QueryProvider>
       <AuthProvider>
@@ -35,7 +45,7 @@ function App() {
                 path="/search"
                 element={
                   <ProtectedRoute>
-                    <SearchPage />
+                    <SearchPage onToggleTheme={() => setMode(mode === 'light' ? 'dark' : 'light')} />
                   </ProtectedRoute>
                 }
               />

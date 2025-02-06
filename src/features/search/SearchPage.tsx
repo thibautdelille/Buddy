@@ -1,17 +1,22 @@
-import { Box } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Container, Box } from '@mui/material';
 import { useAuth } from '../auth/useAuth';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { dogsApi } from '../../api/dogs';
-import { useState } from 'react';
-import { SortDirection, SortField } from '../../api/types';
 import { SearchHeader } from './components/SearchHeader';
 import { SearchControls } from './components/SearchControls';
 import { DogGrid } from './components/DogGrid';
+import { useDogs } from './hooks/useDogs';
+import { SortDirection, SortField } from '../../api/types';
 
 const DOGS_PER_PAGE = 32;
 
-export function SearchPage() {
+interface SearchPageProps {
+  onToggleTheme: () => void;
+}
+
+export function SearchPage({ onToggleTheme }: SearchPageProps) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [selectedBreed, setSelectedBreed] = useState<string>('');
@@ -90,27 +95,31 @@ export function SearchPage() {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <SearchHeader userName={user?.name} onLogout={handleLogout} />
-      
-      <SearchControls
-        breeds={breeds}
-        selectedBreed={selectedBreed}
-        sortField={sortField}
-        sortDirection={sortDirection}
-        onBreedChange={handleBreedChange}
-        onSortFieldChange={handleSortFieldChange}
-        onSortDirectionChange={handleSortDirectionChange}
+    <Box>
+      <SearchHeader
+        userName={user?.name || ''}
+        onLogout={handleLogout}
+        onToggleTheme={onToggleTheme}
       />
-
-      <DogGrid
-        dogs={searchResults?.dogs || []}
-        isLoading={isLoadingDogs}
-        error={dogsError}
-        page={page}
-        totalPages={totalPages}
-        onPageChange={setPage}
-      />
+      <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+        <SearchControls
+          breeds={breeds}
+          selectedBreed={selectedBreed}
+          sortField={sortField}
+          sortDirection={sortDirection}
+          onBreedChange={handleBreedChange}
+          onSortFieldChange={handleSortFieldChange}
+          onSortDirectionChange={handleSortDirectionChange}
+        />
+        <DogGrid
+          dogs={searchResults?.dogs || []}
+          isLoading={isLoadingDogs}
+          error={dogsError}
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </Container>
     </Box>
   );
 }

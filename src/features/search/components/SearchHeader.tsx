@@ -1,30 +1,30 @@
-import { Box, Button, Typography } from '@mui/material';
+import { AppBar, Box, IconButton, Toolbar, Typography, useTheme } from '@mui/material';
+import { Logout, Brightness4, Brightness7 } from '@mui/icons-material';
 
 interface SearchHeaderProps {
-  userName: string | undefined;
+  userName: string;
   onLogout: () => void;
+  onToggleTheme: () => void;
 }
 
-export function SearchHeader({ userName, onLogout }: SearchHeaderProps) {
+export const SearchHeader = ({ userName, onLogout, onToggleTheme }: SearchHeaderProps) => {
+  const theme = useTheme();
+
   return (
-    <>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          mb: 4,
-        }}
-      >
-        <Typography variant="h4">Welcome {userName}</Typography>
-        <Button variant="contained" onClick={onLogout}>
-          Log Out
-        </Button>
-      </Box>
-
-      <Typography variant="h5" sx={{ mb: 3 }}>
-        Find Your Perfect Buddy
-      </Typography>
-    </>
+    <AppBar position="static" color="default" elevation={1}>
+      <Toolbar>
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          Welcome, {userName}!
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <IconButton onClick={onToggleTheme} color="inherit" sx={{ mr: 1 }}>
+            {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
+          <IconButton onClick={onLogout} color="inherit">
+            <Logout />
+          </IconButton>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
-}
+};
