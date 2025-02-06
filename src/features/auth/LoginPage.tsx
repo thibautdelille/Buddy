@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -9,7 +8,7 @@ import {
   Typography,
   Alert,
 } from '@mui/material';
-import { authApi, LoginCredentials } from '../../api';
+import { useAuth } from './useAuth';
 
 interface LoginFormData {
   name: string;
@@ -21,85 +20,63 @@ interface FormErrors {
   email?: string;
 }
 
-export const LoginPage = () => {
+export function LoginPage() {
   const navigate = useNavigate();
+  const { signIn } = useAuth();
   const [formData, setFormData] = useState<LoginFormData>({
     name: '',
     email: '',
   });
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [error, setError] = useState<string>('');
 
-  const loginMutation = useMutation({
-    mutationFn: (credentials: LoginCredentials) => authApi.login(credentials),
-    onSuccess: () => {
-      // Redirect to search page on successful login
-      navigate('/search');
-    },
-    onError: (error) => {
-      console.error('Login failed:', error);
-    },
-  });
+  const validateForm = (): boolean => {
+    const errors: FormErrors = {};
+    let isValid = true;
 
-  const validateField = (name: keyof LoginFormData, value: string): string => {
-    switch (name) {
-      case 'name': {
-        if (!value.trim()) {
-          return 'Name is required';
-        }
-        if (value.trim().length < 2) {
-          return 'Name must be at least 2 characters';
-        }
-        return '';
-      }
-      case 'email': {
-        if (!value.trim()) {
-          return 'Email is required';
-        }
-        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-        if (!emailRegex.test(value)) {
-          return 'Invalid email address';
-        }
-        return '';
-      }
-      default:
-        return '';
+    if (!formData.name.trim()) {
+      errors.name = 'Name is required';
+      isValid = false;
     }
-  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    
-    const error = validateField(name as keyof LoginFormData, value);
-    setErrors((prev) => ({
-      ...prev,
-      [name]: error,
-    }));
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = 'Email is invalid';
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+    return isValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
 
-    // Validate all fields
-    const newErrors: FormErrors = {};
-    Object.entries(formData).forEach(([key, value]) => {
-      const error = validateField(key as keyof LoginFormData, value);
-      if (error) {
-        newErrors[key as keyof FormErrors] = error;
-      }
-    });
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!validateForm()) {
       return;
     }
 
-    // Submit the form
-    loginMutation.mutate(formData);
+    try {
+      await signIn(formData);
+      navigate('/search');
+    } catch {
+      setError('Failed to log in. Please try again.');
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   return (
-    <Container component="main" maxWidth="xs">
+    <Container maxWidth="sm">
       <Box
         sx={{
           marginTop: 8,
@@ -111,10 +88,14 @@ export const LoginPage = () => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          {loginMutation.isError && (
+        <Box
+          component="form"
+          onSubmit={handleSubmit}
+          sx={{ mt: 1, width: '100%' }}
+        >
+          {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
-              Authentication failed. Please try again.
+              {error}
             </Alert>
           )}
           <TextField
@@ -127,9 +108,9 @@ export const LoginPage = () => {
             autoComplete="name"
             autoFocus
             value={formData.name}
-            onChange={handleChange}
-            error={!!errors.name}
-            helperText={errors.name}
+            onChange={handleInputChange}
+            error={!!formErrors.name}
+            helperText={formErrors.name}
           />
           <TextField
             margin="normal"
@@ -140,21 +121,20 @@ export const LoginPage = () => {
             name="email"
             autoComplete="email"
             value={formData.email}
-            onChange={handleChange}
-            error={!!errors.email}
-            helperText={errors.email}
+            onChange={handleInputChange}
+            error={!!formErrors.email}
+            helperText={formErrors.email}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
-            disabled={loginMutation.isPending}
           >
-            {loginMutation.isPending ? 'Signing in...' : 'Sign In'}
+            Sign In
           </Button>
         </Box>
       </Box>
     </Container>
   );
-};
+}
