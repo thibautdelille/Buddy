@@ -57,6 +57,9 @@ export interface LocationSearchResponse {
   total: number;
 }
 
+export type SortField = 'breed' | 'name' | 'age';
+export type SortDirection = 'asc' | 'desc';
+
 export interface SearchDogsParams {
   breeds?: string[];
   zipCodes?: string[];
@@ -64,5 +67,5 @@ export interface SearchDogsParams {
   ageMax?: number;
   size?: number;
   from?: string;
-  sort?: string;
+  sort?: `${SortField}:${SortDirection}`;
 }
