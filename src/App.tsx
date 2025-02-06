@@ -1,4 +1,6 @@
 import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { QueryProvider } from './providers/QueryProvider';
 import { LoginPage } from './features/auth/LoginPage';
 
 const theme = createTheme({
@@ -14,10 +16,14 @@ const theme = createTheme({
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <LoginPage />
-    </ThemeProvider>
+    <QueryProvider>
+      <Router>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <LoginPage />
+        </ThemeProvider>
+      </Router>
+    </QueryProvider>
   );
 }
 
