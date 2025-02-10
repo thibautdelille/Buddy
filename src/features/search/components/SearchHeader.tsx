@@ -2,11 +2,13 @@ import {
   AppBar,
   Box,
   IconButton,
+  Stack,
   Toolbar,
   Typography,
   useTheme,
 } from '@mui/material';
-import { Logout, Brightness4, Brightness7 } from '@mui/icons-material';
+import { Logout, DarkMode, LightMode } from '@mui/icons-material';
+import PetsIcon from '@mui/icons-material/Pets';
 
 interface SearchHeaderProps {
   userName: string;
@@ -14,28 +16,46 @@ interface SearchHeaderProps {
   onToggleTheme: () => void;
 }
 
-export const SearchHeader = ({
-  userName,
-  onLogout,
-  onToggleTheme,
-}: SearchHeaderProps) => {
+export function SearchHeader({ userName, onLogout, onToggleTheme }: SearchHeaderProps) {
   const theme = useTheme();
 
   return (
-    <AppBar position="static" color="default" elevation={1}>
+    <AppBar position="static" color="default">
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Welcome, {userName}!
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <IconButton onClick={onToggleTheme} color="inherit" sx={{ mr: 1 }}>
-            {theme.palette.mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+        {/* Logo */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <PetsIcon color="primary" sx={{ fontSize: 32 }} />
+          <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
+            Buddy
+          </Typography>
+        </Box>
+
+        {/* Spacer */}
+        <Box sx={{ flexGrow: 1 }} />
+
+        {/* User Actions */}
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Typography variant="body2" color="text.secondary">
+            {userName}
+          </Typography>
+          <IconButton
+            onClick={onToggleTheme}
+            size="small"
+            color="inherit"
+            aria-label="toggle theme"
+          >
+            {theme.palette.mode === 'dark' ? <LightMode /> : <DarkMode />}
           </IconButton>
-          <IconButton onClick={onLogout} color="inherit">
+          <IconButton
+            onClick={onLogout}
+            size="small"
+            color="inherit"
+            aria-label="logout"
+          >
             <Logout />
           </IconButton>
-        </Box>
+        </Stack>
       </Toolbar>
     </AppBar>
   );
-};
+}
