@@ -7,7 +7,6 @@ import { dogsApi } from '../../api/dogs';
 import { SearchHeader } from './components/SearchHeader';
 import { SearchControls } from './components/SearchControls';
 import { DogGrid } from './components/DogGrid';
-import { useDogs } from './hooks/useDogs';
 import { SortDirection, SortField } from '../../api/types';
 import { useFavorites } from '../favorites/useFavorites';
 import { Favorite } from '@mui/icons-material';
@@ -133,13 +132,21 @@ export function SearchPage({ onToggleTheme }: SearchPageProps) {
             </Typography>
           ) : (
             <Typography>
-              You saved {favorites.length} {favorites.length === 1 ? 'dog' : 'dogs'} to
-              your favorites. Click on Find a Match to get matched with the dogs you love!
+              You saved {favorites.length}{' '}
+              {favorites.length === 1 ? 'dog' : 'dogs'} to your favorites. Click
+              on Find a Match to get matched with the dogs you love!
             </Typography>
           )}
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            mb: 3,
+          }}
+        >
           <SearchControls
             breeds={breeds}
             selectedBreed={selectedBreed}
