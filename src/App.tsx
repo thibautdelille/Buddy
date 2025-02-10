@@ -6,6 +6,7 @@ import {
   Navigate,
 } from 'react-router-dom';
 import { QueryProvider } from './providers/QueryProvider';
+import { FavoritesProvider } from './providers/FavoritesProvider';
 import { LoginPage } from './features/auth/LoginPage';
 import { SearchPage } from './features/search/SearchPage';
 import { ProtectedRoute } from './features/auth/ProtectedRoute';
@@ -36,25 +37,27 @@ function App() {
   return (
     <QueryProvider>
       <AuthProvider>
-        <Router>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              <Route
-                path="/search"
-                element={
-                  <ProtectedRoute>
-                    <SearchPage onToggleTheme={() => setMode(mode === 'light' ? 'dark' : 'light')} />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/" element={<Navigate to="/search" replace />} />
-            </Routes>
-          </ThemeProvider>
+        <FavoritesProvider>
+          <Router>
+            <ThemeProvider theme={theme}>
+              <CssBaseline />
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route
+                  path="/search"
+                  element={
+                    <ProtectedRoute>
+                      <SearchPage onToggleTheme={() => setMode(mode === 'light' ? 'dark' : 'light')} />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/" element={<Navigate to="/search" replace />} />
+              </Routes>
+            </ThemeProvider>
         </Router>
-      </AuthProvider>
-    </QueryProvider>
+      </FavoritesProvider>
+    </AuthProvider>
+  </QueryProvider>
   );
 }
 

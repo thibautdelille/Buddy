@@ -1,4 +1,11 @@
-import { AppBar, Box, IconButton, Toolbar, Typography, useTheme } from '@mui/material';
+import {
+  AppBar,
+  Box,
+  IconButton,
+  Toolbar,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import { Logout, Brightness4, Brightness7 } from '@mui/icons-material';
 
 interface SearchHeaderProps {
@@ -7,7 +14,11 @@ interface SearchHeaderProps {
   onToggleTheme: () => void;
 }
 
-export const SearchHeader = ({ userName, onLogout, onToggleTheme }: SearchHeaderProps) => {
+export const SearchHeader = ({
+  userName,
+  onLogout,
+  onToggleTheme,
+}: SearchHeaderProps) => {
   const theme = useTheme();
 
   return (
