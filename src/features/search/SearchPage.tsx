@@ -1,16 +1,22 @@
 import { useState } from 'react';
-import { Container, Box, Typography, Button } from '@mui/material';
+import { Container, Box, Button, Tabs, Tab } from '@mui/material';
 import { useAuth } from '../auth/useAuth';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { dogsApi } from '../../api/dogs';
 import { SearchHeader } from './components/SearchHeader';
-import { SearchControls } from './components/SearchControls';
 import { DogGrid } from './components/DogGrid';
-import { SortDirection, SortField } from '../../api/types';
+import { SortControls } from './components/SortControls';
+import { FavoritesView } from '../favorites/FavoritesView';
+import {
+  SortDirection,
+  SortField,
+  Location as ApiLocation,
+} from '../../api/types';
 import { useFavorites } from '../favorites/useFavorites';
 import { Favorite } from '@mui/icons-material';
 import { MatchDialog } from '../match/MatchDialog';
+import { FilterDialog } from './components/FilterDialog';
 
 const DOGS_PER_PAGE = 32;
 
@@ -27,6 +33,8 @@ export function SearchPage({ onToggleTheme }: SearchPageProps) {
   const [sortField, setSortField] = useState<SortField>('breed');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [isMatchDialogOpen, setIsMatchDialogOpen] = useState(false);
+  const [selectedLocations, setSelectedLocations] = useState<ApiLocation[]>([]);
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleLogout = async () => {
     await signOut();
@@ -58,16 +66,24 @@ export function SearchPage({ onToggleTheme }: SearchPageProps) {
     queryFn: dogsApi.getBreeds,
   });
 
-  // Fetch dogs with pagination and breed filter
+  // Fetch dogs with pagination, breed filter, and location filter
   const {
     data: searchResults,
     isLoading: isLoadingDogs,
     error: dogsError,
   } = useQuery({
-    queryKey: ['dogs', selectedBreed, page, sortField, sortDirection],
+    queryKey: [
+      'dogs',
+      selectedBreed,
+      page,
+      sortField,
+      sortDirection,
+      selectedLocations,
+    ],
     queryFn: async () => {
       const searchResponse = await dogsApi.search({
         breeds: selectedBreed ? [selectedBreed] : undefined,
+        zipCodes: selectedLocations.map((loc) => loc.zip_code),
         size: DOGS_PER_PAGE,
         from: page > 1 ? ((page - 1) * DOGS_PER_PAGE).toString() : undefined,
         sort: `${sortField}:${sortDirection}`,
@@ -94,21 +110,6 @@ export function SearchPage({ onToggleTheme }: SearchPageProps) {
     return <Box sx={{ p: 3 }}>Error loading breeds: {breedsError.message}</Box>;
   }
 
-  const handleBreedChange = (breed: string) => {
-    setSelectedBreed(breed);
-    setPage(1);
-  };
-
-  const handleSortFieldChange = (field: SortField) => {
-    setSortField(field);
-    setPage(1);
-  };
-
-  const handleSortDirectionChange = (direction: SortDirection) => {
-    setSortDirection(direction);
-    setPage(1);
-  };
-
   return (
     <Box>
       <SearchHeader
@@ -117,63 +118,69 @@ export function SearchPage({ onToggleTheme }: SearchPageProps) {
         onToggleTheme={onToggleTheme}
       />
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1 }}>
-          {favorites.length === 0 ? (
-            <Typography>
-              Search and add dogs to your favorites by clicking on the{' '}
-              <Favorite
-                color="primary"
-                sx={{
-                  verticalAlign: 'middle',
-                  fontSize: '1rem',
-                }}
-              />{' '}
-              icon and we can match you with the perfect dog
-            </Typography>
-          ) : (
-            <Typography>
-              You saved {favorites.length}{' '}
-              {favorites.length === 1 ? 'dog' : 'dogs'} to your favorites. Click
-              on Find a Match to get matched with the dogs you love!
-            </Typography>
-          )}
-        </Box>
-
         <Box
           sx={{
             display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            mb: 3,
+            flexDirection: 'column',
+            gap: 3,
+            py: 3,
           }}
         >
-          <SearchControls
-            breeds={breeds}
-            selectedBreed={selectedBreed}
-            sortField={sortField}
-            sortDirection={sortDirection}
-            onBreedChange={handleBreedChange}
-            onSortFieldChange={handleSortFieldChange}
-            onSortDirectionChange={handleSortDirectionChange}
-          />
           <Button
             variant="contained"
             color="primary"
             onClick={handleFindMatch}
+            startIcon={<Favorite />}
             disabled={favorites.length === 0 || matchMutation.isPending}
           >
-            Find a Match
+            Find Match
           </Button>
-        </Box>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs
+              value={activeTab}
+              onChange={(_, value) => setActiveTab(value)}
+            >
+              <Tab label="Search" />
+              <Tab label={`Favorites (${favorites.length})`} />
+            </Tabs>
+          </Box>
 
-        <DogGrid
-          dogs={searchResults?.dogs || []}
-          isLoading={isLoadingDogs}
-          error={dogsError}
-          page={page}
-          totalPages={totalPages}
-          onPageChange={setPage}
-        />
+          {activeTab === 0 ? (
+            <>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <FilterDialog
+                  onLocationsChange={setSelectedLocations}
+                  onBreedChange={setSelectedBreed}
+                  breeds={breeds || []}
+                  selectedBreed={selectedBreed}
+                />
+                <SortControls
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                  onSortFieldChange={setSortField}
+                  onSortDirectionChange={setSortDirection}
+                />
+              </Box>
+
+              <DogGrid
+                dogs={searchResults?.dogs || []}
+                isLoading={isLoadingDogs}
+                error={dogsError}
+                page={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+              />
+            </>
+          ) : (
+            <FavoritesView />
+          )}
+        </Box>
 
         <MatchDialog
           open={isMatchDialogOpen}
