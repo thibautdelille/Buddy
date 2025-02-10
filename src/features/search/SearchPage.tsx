@@ -126,15 +126,23 @@ export function SearchPage({ onToggleTheme }: SearchPageProps) {
             py: 3,
           }}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleFindMatch}
-            startIcon={<Favorite />}
-            disabled={favorites.length === 0 || matchMutation.isPending}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+            }}
           >
-            Find Match
-          </Button>
+            <Button
+              variant="contained"
+              size="large"
+              color="primary"
+              onClick={handleFindMatch}
+              startIcon={<Favorite />}
+              disabled={favorites.length === 0 || matchMutation.isPending}
+            >
+              Find Match
+            </Button>
+          </Box>
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs
               value={activeTab}
