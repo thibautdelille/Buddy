@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PetsIcon from '@mui/icons-material/Pets';
 import {
   Box,
   Container,
@@ -7,6 +8,7 @@ import {
   Button,
   Typography,
   Alert,
+  Paper,
 } from '@mui/material';
 import { useAuth } from './useAuth';
 
@@ -61,9 +63,9 @@ export function LoginPage() {
 
     try {
       await signIn(formData);
-      navigate('/search');
-    } catch {
-      setError('Failed to log in. Please try again.');
+      navigate('/');
+    } catch (err) {
+      setError('Failed to sign in. Please try again.');
     }
   };
 
@@ -73,67 +75,103 @@ export function LoginPage() {
       ...prev,
       [name]: value,
     }));
+    // Clear error when user starts typing
+    if (formErrors[name as keyof FormErrors]) {
+      setFormErrors((prev) => ({
+        ...prev,
+        [name]: undefined,
+      }));
+    }
   };
 
   return (
     <Container maxWidth="sm">
       <Box
         sx={{
-          marginTop: 8,
+          minHeight: '100vh',
           display: 'flex',
           flexDirection: 'column',
+          justifyContent: 'center',
           alignItems: 'center',
+          gap: 4,
         }}
       >
-        <Typography component="h1" variant="h5">
-          Sign in
-        </Typography>
         <Box
-          component="form"
-          onSubmit={handleSubmit}
-          sx={{ mt: 1, width: '100%' }}
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2,
+          }}
         >
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="name"
-            label="Name"
-            name="name"
-            autoComplete="name"
-            autoFocus
-            value={formData.name}
-            onChange={handleInputChange}
-            error={!!formErrors.name}
-            helperText={formErrors.name}
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            error={!!formErrors.email}
-            helperText={formErrors.email}
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+          <PetsIcon color="primary" sx={{ fontSize: 64 }} />
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ fontWeight: 'bold', color: 'primary.main' }}
           >
-            Sign In
-          </Button>
+            Buddy
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{ color: 'text.secondary', textAlign: 'center', mb: 2 }}
+          >
+            Find your perfect furry companion
+          </Typography>
         </Box>
+
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            width: '100%',
+            maxWidth: 400,
+            borderRadius: 2,
+          }}
+        >
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+            }}
+          >
+            {error && <Alert severity="error">{error}</Alert>}
+
+            <TextField
+              fullWidth
+              label="Name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              error={!!formErrors.name}
+              helperText={formErrors.name}
+            />
+
+            <TextField
+              fullWidth
+              label="Email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              error={!!formErrors.email}
+              helperText={formErrors.email}
+            />
+
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              fullWidth
+              sx={{ mt: 2 }}
+            >
+              Sign In
+            </Button>
+          </Box>
+        </Paper>
       </Box>
     </Container>
   );
