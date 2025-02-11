@@ -4,7 +4,8 @@ import { FilterList } from '@mui/icons-material';
 import { Location } from '../../../api/types';
 import { BreedFilterTab } from './BreedFilterTab';
 import { LocationFilterTab } from './LocationFilterTab';
-import { groupLocations } from '../lib/groupLocations';
+import { groupLocations } from '../lib/utils';
+import { ZipCodeFilterTab } from './ZipCodeFilterTab';
 
 interface FilterDialogProps {
   onLocationsChange: (locations: Location[]) => void;
@@ -115,7 +116,8 @@ export function FilterDialog({
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabValue} onChange={handleTabChange}>
               <Tab label="Breed" />
-              <Tab label="Location" />
+              <Tab label="City/State" />
+              <Tab label="Zip Code" />
             </Tabs>
           </Box>
 
@@ -129,6 +131,13 @@ export function FilterDialog({
 
           <TabPanel value={tabValue} index={1}>
             <LocationFilterTab
+              selectedLocations={selectedLocations}
+              onLocationsChange={handleLocationsChange}
+            />
+          </TabPanel>
+
+          <TabPanel value={tabValue} index={2}>
+            <ZipCodeFilterTab
               selectedLocations={selectedLocations}
               onLocationsChange={handleLocationsChange}
             />

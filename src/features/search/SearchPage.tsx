@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Container, Box, Button, Tabs, Tab } from '@mui/material';
 import { useAuth } from '../auth/useAuth';
 import { useNavigate } from 'react-router-dom';
@@ -18,7 +18,7 @@ import { Favorite } from '@mui/icons-material';
 import { MatchDialog } from '../match/MatchDialog';
 import { FilterDialog } from './components/FilterDialog';
 
-const DOGS_PER_PAGE = 32;
+const DOGS_PER_PAGE = 36;
 
 interface SearchPageProps {
   onToggleTheme: () => void;
@@ -98,9 +98,11 @@ export function SearchPage({ onToggleTheme }: SearchPageProps) {
     },
   });
 
-  const totalPages = searchResults
-    ? Math.ceil(searchResults.total / DOGS_PER_PAGE)
-    : 0;
+  const totalPages = useMemo(
+    () =>
+      searchResults?.total ? Math.ceil(searchResults.total / DOGS_PER_PAGE) : 0,
+    [searchResults]
+  );
 
   if (isLoadingBreeds) {
     return <Box sx={{ p: 3 }}>Loading breeds...</Box>;

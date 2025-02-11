@@ -1,8 +1,9 @@
 import { Box, Grid2 as Grid, Pagination, Typography } from '@mui/material';
-import { Dog, Location } from '../../../api/types';
+import { Dog } from '../../../api/types';
 import { DogCard } from './DogCard';
 import { useQuery } from '@tanstack/react-query';
 import { locationsApi } from '../../../api/locations';
+import { getDogCity } from '../lib/utils';
 
 interface DogGridProps {
   dogs: Dog[];
@@ -43,22 +44,17 @@ export function DogGrid({
     return <Typography>No dogs found</Typography>;
   }
 
-  function getDogCity(dog: Dog, locations: Location[]) {
-    const location = locations.find(
-      (location) => location.zip_code === dog.zip_code
-    );
-    return location ? location.city : undefined;
-  }
-
   return (
     <>
-      <Grid container spacing={3} sx={{ mb: 3 }}>
-        {dogs.map((dog) => (
-          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={dog.id}>
-            <DogCard dog={dog} city={getDogCity(dog, locations)} />
-          </Grid>
-        ))}
-      </Grid>
+      {locations.length > 0 ? (
+        <Grid container spacing={3} sx={{ mb: 3 }}>
+          {dogs.map((dog) => (
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={dog.id}>
+              <DogCard dog={dog} city={getDogCity(dog, locations)} />
+            </Grid>
+          ))}
+        </Grid>
+      ) : null}
 
       {totalPages > 1 && (
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
