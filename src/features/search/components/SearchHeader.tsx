@@ -29,9 +29,7 @@ export function SearchHeader({
         {/* Logo */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <PetsIcon sx={{ fontSize: 32 }} />
-          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-            Buddy
-          </Typography>
+          <Typography variant="h5">Buddy</Typography>
         </Box>
 
         {/* Spacer */}

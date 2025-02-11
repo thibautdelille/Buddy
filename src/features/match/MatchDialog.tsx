@@ -50,11 +50,18 @@ export function MatchDialog({
   }
 
   if (!matchedDog) {
-    return <Typography>No match found</Typography>;
+    // return <Typography>No match found</Typography>;
+    return (
+      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <DialogContent sx={{ p: 0 }}>
+          <Typography>No match found</Typography>
+        </DialogContent>
+      </Dialog>
+    );
   }
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogContent sx={{ p: 0 }}>
+      <DialogContent sx={{ p: 1 }}>
         {isLoading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
             <CircularProgress />
@@ -75,6 +82,7 @@ export function MatchDialog({
                 width: '100%',
                 height: 300,
                 objectFit: 'cover',
+                borderRadius: 1,
               }}
             />
             <Box sx={{ p: 3 }}>

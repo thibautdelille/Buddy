@@ -31,13 +31,13 @@ export function DogCard({ dog, location }: DogCardProps) {
 
   return (
     <Card>
-      <Box sx={{ position: 'relative' }}>
+      <Box sx={{ position: 'relative', p: 1 }}>
         <CardMedia
           component="img"
           height="200"
           image={dog.img}
           alt={dog.name}
-          sx={{ objectFit: 'cover' }}
+          sx={{ objectFit: 'cover', borderRadius: '8px' }}
         />
         <IconButton
           onClick={handleToggleFavorite}

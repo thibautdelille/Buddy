@@ -30,6 +30,18 @@ function App() {
         shape: {
           borderRadius: 10,
         },
+        typography: {
+          fontFamily: "'Inter', sans-serif",
+          h6: {
+            fontFamily: "'Pacifico', cursive",
+          },
+          h5: {
+            fontFamily: "'Pacifico', cursive",
+          },
+          h4: {
+            fontFamily: "'Pacifico', cursive",
+          },
+        },
         palette: {
           mode,
           primary: {
