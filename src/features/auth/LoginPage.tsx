@@ -64,7 +64,7 @@ export function LoginPage() {
     try {
       await signIn(formData);
       navigate('/');
-    } catch (err) {
+    } catch {
       setError('Failed to sign in. Please try again.');
     }
   };

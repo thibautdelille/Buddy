@@ -1,13 +1,22 @@
-import { Card, CardContent, CardMedia, Typography, IconButton, Box, useTheme } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  IconButton,
+  Box,
+  useTheme,
+} from '@mui/material';
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
 import { Dog } from '../../../api/types';
 import { useFavorites } from '../../../features/favorites/useFavorites';
 
 interface DogCardProps {
   dog: Dog;
+  city?: string;
 }
 
-export function DogCard({ dog }: DogCardProps) {
+export function DogCard({ dog, city }: DogCardProps) {
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   const favorite = isFavorite(dog.id);
   const theme = useTheme();
@@ -33,25 +42,23 @@ export function DogCard({ dog }: DogCardProps) {
         <IconButton
           onClick={handleToggleFavorite}
           sx={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-            backgroundColor: theme.palette.mode === 'dark' 
-              ? 'rgba(0, 0, 0, 0.7)'
-              : 'rgba(255, 255, 255, 0.7)',
+            'position': 'absolute',
+            'top': 8,
+            'right': 8,
+            'backgroundColor':
+              theme.palette.mode === 'dark'
+                ? 'rgba(0, 0, 0, 0.7)'
+                : 'rgba(255, 255, 255, 0.7)',
             '&:hover': {
-              backgroundColor: theme.palette.mode === 'dark'
-                ? 'rgba(0, 0, 0, 0.9)'
-                : 'rgba(255, 255, 255, 0.9)',
+              backgroundColor:
+                theme.palette.mode === 'dark'
+                  ? 'rgba(0, 0, 0, 0.9)'
+                  : 'rgba(255, 255, 255, 0.9)',
             },
-            color: favorite ? theme.palette.error.main : undefined,
+            'color': favorite ? theme.palette.error.main : undefined,
           }}
         >
-          {favorite ? (
-            <Favorite />
-          ) : (
-            <FavoriteBorder />
-          )}
+          {favorite ? <Favorite /> : <FavoriteBorder />}
         </IconButton>
       </Box>
       <CardContent>
@@ -64,9 +71,15 @@ export function DogCard({ dog }: DogCardProps) {
         <Typography variant="body2" color="text.secondary">
           Age: {dog.age} years
         </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Location: {dog.zip_code}
-        </Typography>
+        {city ? (
+          <Typography variant="body2" color="text.secondary">
+            Location: {city} ({dog.zip_code})
+          </Typography>
+        ) : (
+          <Typography variant="body2" color="text.secondary">
+            Location: {dog.zip_code}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );
