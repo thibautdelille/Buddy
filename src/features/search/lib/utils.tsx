@@ -12,9 +12,6 @@ export const groupLocations = (locations: Location[]) => {
   return groupedLocations;
 };
 
-export function getDogCity(dog: Dog, locations: Location[]) {
-  const location = locations.find(
-    (location) => location?.zip_code === dog.zip_code
-  );
-  return location ? location.city : undefined;
+export function getDogLocation(dog: Dog, locations: Location[]) {
+  return locations.find((location) => location?.zip_code === dog.zip_code);
 }

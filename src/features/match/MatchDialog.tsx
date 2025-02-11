@@ -10,7 +10,7 @@ import {
 import { Dog } from '../../api/types';
 import { useQuery } from '@tanstack/react-query';
 import { locationsApi } from '../../api';
-import { getDogCity } from '../search/lib/utils';
+import { getDogLocation } from '../search/lib/utils';
 import { useMemo } from 'react';
 
 interface MatchDialogProps {
@@ -36,8 +36,8 @@ export function MatchDialog({
       locationsApi.getLocations(zipCodes).then((response) => response),
   });
 
-  const city = useMemo(
-    () => (matchedDog ? getDogCity(matchedDog, locations) : undefined),
+  const location = useMemo(
+    () => (matchedDog ? getDogLocation(matchedDog, locations) : undefined),
     [matchedDog, locations]
   );
 
@@ -94,9 +94,9 @@ export function MatchDialog({
               <Typography variant="body2" color="text.secondary">
                 Age: {matchedDog.age} years old
               </Typography>
-              {city && (
+              {location && (
                 <Typography variant="body2" color="text.secondary">
-                  City: {city}
+                  City: {location.city}, {location.state}
                 </Typography>
               )}
               <Typography variant="body2" color="text.secondary">

@@ -3,7 +3,7 @@ import { Dog } from '../../../api/types';
 import { DogCard } from './DogCard';
 import { useQuery } from '@tanstack/react-query';
 import { locationsApi } from '../../../api/locations';
-import { getDogCity } from '../lib/utils';
+import { getDogLocation } from '../lib/utils';
 
 interface DogGridProps {
   dogs: Dog[];
@@ -50,7 +50,7 @@ export function DogGrid({
         <Grid container spacing={3} sx={{ mb: 3 }}>
           {dogs.map((dog) => (
             <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={dog.id}>
-              <DogCard dog={dog} city={getDogCity(dog, locations)} />
+              <DogCard dog={dog} location={getDogLocation(dog, locations)} />
             </Grid>
           ))}
         </Grid>

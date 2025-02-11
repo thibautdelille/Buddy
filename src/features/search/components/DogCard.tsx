@@ -8,15 +8,15 @@ import {
   useTheme,
 } from '@mui/material';
 import { Favorite, FavoriteBorder } from '@mui/icons-material';
-import { Dog } from '../../../api/types';
+import { Dog, Location } from '../../../api/types';
 import { useFavorites } from '../../../features/favorites/useFavorites';
 
 interface DogCardProps {
   dog: Dog;
-  city?: string;
+  location?: Location;
 }
 
-export function DogCard({ dog, city }: DogCardProps) {
+export function DogCard({ dog, location }: DogCardProps) {
   const { isFavorite, addFavorite, removeFavorite } = useFavorites();
   const favorite = isFavorite(dog.id);
   const theme = useTheme();
@@ -71,9 +71,9 @@ export function DogCard({ dog, city }: DogCardProps) {
         <Typography variant="body2" color="text.secondary">
           Age: {dog.age} years
         </Typography>
-        {city ? (
+        {location ? (
           <Typography variant="body2" color="text.secondary">
-            Location: {city} ({dog.zip_code})
+            Location: {location.city}, {location.state} {dog.zip_code}
           </Typography>
         ) : (
           <Typography variant="body2" color="text.secondary">

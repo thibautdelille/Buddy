@@ -16,16 +16,20 @@ interface SearchHeaderProps {
   onToggleTheme: () => void;
 }
 
-export function SearchHeader({ userName, onLogout, onToggleTheme }: SearchHeaderProps) {
+export function SearchHeader({
+  userName,
+  onLogout,
+  onToggleTheme,
+}: SearchHeaderProps) {
   const theme = useTheme();
 
   return (
-    <AppBar position="static" color="default">
+    <AppBar position="static">
       <Toolbar>
         {/* Logo */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <PetsIcon color="primary" sx={{ fontSize: 32 }} />
-          <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold' }}>
+          <PetsIcon sx={{ fontSize: 32 }} />
+          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
             Buddy
           </Typography>
         </Box>
@@ -35,9 +39,7 @@ export function SearchHeader({ userName, onLogout, onToggleTheme }: SearchHeader
 
         {/* User Actions */}
         <Stack direction="row" spacing={2} alignItems="center">
-          <Typography variant="body2" color="text.secondary">
-            {userName}
-          </Typography>
+          <Typography variant="body2">{userName}</Typography>
           <IconButton
             onClick={onToggleTheme}
             size="small"

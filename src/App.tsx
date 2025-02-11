@@ -1,4 +1,9 @@
-import { CssBaseline, ThemeProvider, createTheme, useMediaQuery } from '@mui/material';
+import {
+  CssBaseline,
+  ThemeProvider,
+  createTheme,
+  useMediaQuery,
+} from '@mui/material';
 import {
   BrowserRouter as Router,
   Routes,
@@ -15,19 +20,24 @@ import { useMemo, useState } from 'react';
 
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [mode, setMode] = useState<'light' | 'dark'>(prefersDarkMode ? 'dark' : 'light');
+  const [mode, setMode] = useState<'light' | 'dark'>(
+    prefersDarkMode ? 'dark' : 'light'
+  );
 
   const theme = useMemo(
     () =>
       createTheme({
+        shape: {
+          borderRadius: 10,
+        },
         palette: {
           mode,
           primary: {
-            main: '#2196f3',
+            main: '#F2542d',
           },
           background: {
-            default: mode === 'light' ? '#f5f5f5' : '#121212',
-            paper: mode === 'light' ? '#fff' : '#1e1e1e',
+            default: mode === 'light' ? '#f5DFBB' : '#121212',
+            paper: mode === 'light' ? '#FFEFDC' : '#1e1e1e',
           },
         },
       }),
@@ -47,17 +57,21 @@ function App() {
                   path="/search"
                   element={
                     <ProtectedRoute>
-                      <SearchPage onToggleTheme={() => setMode(mode === 'light' ? 'dark' : 'light')} />
+                      <SearchPage
+                        onToggleTheme={() =>
+                          setMode(mode === 'light' ? 'dark' : 'light')
+                        }
+                      />
                     </ProtectedRoute>
                   }
                 />
                 <Route path="/" element={<Navigate to="/search" replace />} />
               </Routes>
             </ThemeProvider>
-        </Router>
-      </FavoritesProvider>
-    </AuthProvider>
-  </QueryProvider>
+          </Router>
+        </FavoritesProvider>
+      </AuthProvider>
+    </QueryProvider>
   );
 }
 
